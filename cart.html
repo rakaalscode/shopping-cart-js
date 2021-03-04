@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<head>
+    <title>Cart</title>
+</head>
+    <body>
+        <h1>Shopping Cart</h1>
+        <div>
+            <ul>
+                <li><a class="add-to-cart" href="#" data-name="Apple" data-price="2000">Apple 2000</a></li>
+                <li><a class="add-to-cart" href="#" data-name="Banana" data-price="5000">Banana 5000</a></li>
+                <li><a class="add-to-cart" href="#" data-name="Shoe" data-price="200000">Shoe 200000</a></li>
+                <li><a class="add-to-cart" href="#" data-name="Frisbee" data-price="7500">Frisbee 2000</a></li>
+            </ul>
+            <button id="clear-cart">Clear Cart</button>
+        </div>
+
+        <div>
+            <ul id="show-cart">
+
+            </ul>
+        </div>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+
+                $(".add-to-cart").click(function(event) {
+                    event.preventDefault();
+                    var name = $(this).attr("data-name");
+                    var price = Number($(this).attr("data-price"));
+
+                    addItemToCart(name,price,1);
+                    displayCart();
+                });
+
+                function displayCart() {
+                    var cartArray = listsCart();
+                    var output = "";
+                    for (var i in cartArray) {
+                        output += "<li>"+cartArray[i].name+" "+cartArray[i].count+"</li>";
+                    }
+                    $("#show-cart").html(output);
+                }
+
+                var cart = [];
+
+                var Item = function(name, price, count) {
+                    this.name = name
+                    this.price = price
+                    this.count = count
+                }
+
+                function addItemToCart(name, price, count) {
+                    for(var i in cart) {
+                        if(cart[i].name === name) {
+                            cart[i].count += count;
+                            return;
+                        }
+                    }
+                    var item = new Item(name, price, count);
+                    cart.push(item);
+                    saveCart();
+                }
+
+                function removeItemFromCart(name) {
+                    for (var i in cart) {
+                        if(cart[i].name === name) {
+                            cart[i].count --;
+                            if(cart[i].count === 0) {
+                                cart.splice(i,1)
+                            }
+                            break;
+                        }
+                    }
+                    saveCart();
+                }
+
+                function removeAllFromCartAll(name) {
+                    for(var i in cart) {
+                        if(cart[i].name === name) {
+                            cart.splice(i, 1);
+                            break;
+                        }
+                    }
+                    saveCart()
+                }
+
+                function clearCart() {
+                    cart = [];
+                    saveCart()
+                }
+
+                function countCart() {
+                    var totalCount = 0;
+                    for (var i in cart) {
+                        totalCount += cart[i].count;
+                    }
+
+                    return totalCount;
+                }
+
+                function totalCart() {
+                    var totalCost = 0;
+                    for (var i in cart) {
+                        totalCost += cart[i].price;
+                    }
+
+                    return totalCost;
+                }
+
+                function listsCart() {
+                    var cartCopy = [];
+                    for (var i in cart) {
+                        var item = cart[i];
+                        var itemCopy = {};
+                        for (var p in item) {
+                            itemCopy[p] = item[p];
+                        }
+                        cartCopy.push(itemCopy);
+                    }
+                    return cartCopy;
+                }
+                // addItemToCart("Apple", 2000, 1);
+                // addItemToCart("Apple", 2000, 3);
+                // addItemToCart("Banana", 5000, 1);
+                // addItemToCart("Banana", 5000, 6);
+                // addItemToCart("Pear", 3500, 3);
+                // addItemToCart("Melon", 6600, 9);
+                // addItemToCart("Rambutan", 4500, 3);
+
+                function saveCart() {
+                    localStorage.setItem("shoppingCart", JSON.stringify(cart));
+                }
+
+                function loadCart() {
+                    cart = JSON.parse(localStorage.getItem("shoppingCart"));
+                }
+
+                loadCart();
+                displayCart();
+                console.log(listsCart());
+                var array = listsCart();
+            </script>
+
+    </body>
+</html>
